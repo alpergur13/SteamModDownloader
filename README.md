@@ -14,7 +14,7 @@ First of all your folder should look like this.
 
 │── steam/
 
- └── steamcmd.exe
+    └── steamcmd.exe
       
 │── SteamModDownloader.exe
 
