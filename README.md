@@ -11,6 +11,7 @@ This program is free but if you want to support me you can via this link: https:
 
 # How to use
 First of all your folder should look like this.
+
 │── steam/
 
       └── steamcmd.exe
