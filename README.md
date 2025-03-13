@@ -8,3 +8,9 @@ If you need help or if you want to report bugs you can reach me via discord: hal
 Remember i am just a student there can be bugs. 
 
 This program is free but if you want to support me you can via this link: https://buymeacoffee.com/alpergur
+
+# How to use
+│── steam/
+      └── steamcmd.exe
+│── 1.exe
+│── mods.txt 
