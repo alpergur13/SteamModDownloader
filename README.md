@@ -9,7 +9,10 @@ Remember i am just a student there can be bugs.
 
 This program is free but if you want to support me you can via this link: https://buymeacoffee.com/alpergur
 
-# How to use
+# How To Download
+Simply click releases and then click latest version's SteamModDownloader.rar, then you should extract all contents to a folder.
+
+# How To Use
 First of all your folder should look like this.
 
 │── steam/
