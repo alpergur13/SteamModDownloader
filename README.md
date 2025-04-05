@@ -10,6 +10,7 @@ Remember i am just a student there can be bugs.
 This program is free but if you want to support me you can via this link: https://buymeacoffee.com/alpergur
 
 Note: Not all games can be downloaded via steamcmd anonymously, so some games need verification that you own the game, that causes an error if you try to download some mod that doesn't allow anonymous.
+Here you can find out games that supports anonymous downloading: https://steamdb.info/sub/17906/apps/
 
 # How To Download
 Simply click releases and then click latest version's SteamModDownloader.rar, then you should extract all contents to a folder.
