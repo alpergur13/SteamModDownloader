@@ -25,14 +25,14 @@ def parse_steam_urls(file_content):
     app_id = None
     mod_ids = []
 
-    # İlk satırda AppID olabilir, ama artık buna ihtiyacımız yok
+
     first_line = lines[0].strip()
     if first_line.startswith("https://store.steampowered.com/app/"):
         app_match = re.search(r'/app/(\d+)/', first_line)
         if app_match:
             app_id = app_match.group(1)
     else:
-        # İlk satır bir mod ID'si olabilir, bu durumda AppID'yi moddan çekeceğiz
+
         if first_line.isdigit():
             mod_ids.append(first_line)
 
@@ -66,7 +66,7 @@ class DownloaderWorker(QThread):
         self.steam_folder = steam_folder
         self.target_folder = target_folder
         self.mod_names = mod_names
-        self.max_parallel_downloads = max_parallel_downloads  # Yeni: Max parallel downloads
+        self.max_parallel_downloads = max_parallel_downloads
         self.progress_dict = {
             wid: {"status": "WAITING", "progress": 0, "name": self.mod_names.get(wid, f"Mod-{wid}")}
             for wid in workshop_ids
@@ -175,7 +175,7 @@ class DownloaderWorker(QThread):
                     time.sleep(2)
                     continue
 
-                # Uzun dosya yolları için \\?\ ön ekini ekliyoruz
+
                 mod_source = f"\\\\?\\{os.path.join(steam_folder, 'steamapps', 'workshop', 'content', app_id, workshop_id)}"
                 if not os.path.exists(mod_source):
                     retry_count += 1
@@ -185,7 +185,7 @@ class DownloaderWorker(QThread):
                     self.progress_dict[workshop_id] = {"status": "MOVING", "progress": 95, "name": mod_name}
                     self.progress_update.emit(self.progress_dict.copy())
 
-                # Hedef klasör için de \\?\ ön ekini ekliyoruz
+
                 os.makedirs(f"\\\\?\\{target_folder}", exist_ok=True)
                 mod_target = f"\\\\?\\{os.path.join(target_folder, workshop_id)}"
 
@@ -224,7 +224,7 @@ class DownloaderWorker(QThread):
 
 
 class CollectionWorker(QThread):
-    result = pyqtSignal(list, str, str)  # Mod verileri, koleksiyon ID'si ve AppID
+    result = pyqtSignal(list, str, str)
     error = pyqtSignal(str)
     progress = pyqtSignal(int, str)
 
@@ -357,18 +357,18 @@ class SteamWorkshopDownloaderGUI(QMainWindow):
         self.check_steamcmd()
 
     def open_mods_folder(self):
-        target_folder = f"\\\\?\\{self.target_folder}"  # \\?\ ön eki eklendi
+        target_folder = f"\\\\?\\{self.target_folder}"
         if not os.path.exists(target_folder):
             CustomMessageBox.warning(self, "Folder Not Found", "The mods folder does not exist.")
             return
 
         try:
             if sys.platform == "win32":
-                os.startfile(target_folder)  # Windows
+                os.startfile(target_folder)
             elif sys.platform == "darwin":
-                subprocess.run(["open", target_folder])  # macOS
+                subprocess.run(["open", target_folder])
             else:
-                subprocess.run(["xdg-open", target_folder])  # Linux
+                subprocess.run(["xdg-open", target_folder])
         except Exception as e:
             CustomMessageBox.warning(self, "Error", f"Failed to open mods folder: {str(e)}")
 
@@ -387,13 +387,13 @@ class SteamWorkshopDownloaderGUI(QMainWindow):
         if reply == QMessageBox.Yes:
             for row in selected_rows:
                 mod_id = self.mods_folder_table.item(row.row(), 0).text()
-                mod_path = f"\\\\?\\{os.path.join(self.target_folder, mod_id)}"  # \\?\ ön eki eklendi
+                mod_path = f"\\\\?\\{os.path.join(self.target_folder, mod_id)}"
                 if os.path.exists(mod_path):
                     try:
                         shutil.rmtree(mod_path)
                     except Exception as e:
                         QMessageBox.warning(self, "Error", f"Failed to delete mod {mod_id}: {str(e)}")
-            self.update_mods_folder_table()  # Tabloyu güncelle
+            self.update_mods_folder_table()
             QMessageBox.information(self, "Success", f"{len(selected_rows)} mod(s) deleted successfully.")
 
     def delete_all_mods(self):
@@ -410,34 +410,33 @@ class SteamWorkshopDownloaderGUI(QMainWindow):
         if reply == QMessageBox.Yes:
             try:
                 for mod_id in os.listdir(self.target_folder):
-                    mod_path = f"\\\\?\\{os.path.join(self.target_folder, mod_id)}"  # \\?\ ön eki eklendi
+                    mod_path = f"\\\\?\\{os.path.join(self.target_folder, mod_id)}"
                     if os.path.exists(mod_path):
                         shutil.rmtree(mod_path)
-                self.update_mods_folder_table()  # Tabloyu güncelle
+                self.update_mods_folder_table()
                 QMessageBox.information(self, "Success", "All mods deleted successfully.")
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Failed to delete mods: {str(e)}")
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_A and event.modifiers() == Qt.ControlModifier:
-            if self.tabs.currentIndex() == 4:  # Mods Folder sekmesi (indeks 4)
+            if self.tabs.currentIndex() == 4:
                 self.mods_folder_table.selectAll()
         super().keyPressEvent(event)
 
     def update_mods_folder_table(self):
-        self.mods_folder_table.setRowCount(0)  # Tabloyu temizle
+        self.mods_folder_table.setRowCount(0)
         mod_count = 0
         if os.path.exists(self.target_folder):
-            mod_ids = os.listdir(self.target_folder)  # mods klasöründeki dosyaları listele
-            mod_count = len(mod_ids)  # Mod sayısını hesapla
+            mod_ids = os.listdir(self.target_folder)
+            mod_count = len(mod_ids)
             for mod_id in mod_ids:
                 row = self.mods_folder_table.rowCount()
                 self.mods_folder_table.insertRow(row)
                 id_item = QTableWidgetItem(mod_id)
-                id_item.setFlags(id_item.flags() & ~Qt.ItemIsEditable)  # Düzenlenemez yap
+                id_item.setFlags(id_item.flags() & ~Qt.ItemIsEditable)
                 self.mods_folder_table.setItem(row, 0, id_item)
 
-        # Mod sayısını güncelle
         self.mod_count_label.setText(f"Current Mod Count: {mod_count}")
 
     def apply_dark_theme(self):
@@ -553,7 +552,7 @@ class SteamWorkshopDownloaderGUI(QMainWindow):
         """)
 
     def create_tab_widget(self):
-        self.tabs = QTabWidget()  # Bu satırı ekliyoruz
+        self.tabs = QTabWidget()
 
         self.main_tab = QWidget()
         self.main_tab_layout = QVBoxLayout(self.main_tab)
@@ -682,15 +681,14 @@ class SteamWorkshopDownloaderGUI(QMainWindow):
         paths_layout.addLayout(steamcmd_path_layout)
         paths_layout.addLayout(target_path_layout)
 
-        # Yeni: Max Parallel Downloads Ayarı
         downloads_group = QGroupBox("Download Settings")
         downloads_layout = QVBoxLayout(downloads_group)
 
         max_downloads_layout = QHBoxLayout()
         max_downloads_label = QLabel("Max Parallel Downloads:")
         self.max_downloads_input = QComboBox()
-        self.max_downloads_input.addItems([str(i) for i in range(1, 11)])  # 1-10 arası seçenekler
-        self.max_downloads_input.setCurrentText("4")  # Varsayılan değer 4
+        self.max_downloads_input.addItems([str(i) for i in range(1, 11)])
+        self.max_downloads_input.setCurrentText("4")
         max_downloads_layout.addWidget(max_downloads_label)
         max_downloads_layout.addWidget(self.max_downloads_input)
 
@@ -701,7 +699,7 @@ class SteamWorkshopDownloaderGUI(QMainWindow):
 
         self.settings_tab_layout.addWidget(settings_title)
         self.settings_tab_layout.addWidget(paths_group)
-        self.settings_tab_layout.addWidget(downloads_group)  # Yeni grubu ekle
+        self.settings_tab_layout.addWidget(downloads_group)
         self.settings_tab_layout.addWidget(self.btn_save_settings)
         self.settings_tab_layout.addStretch()
 
@@ -774,7 +772,7 @@ class SteamWorkshopDownloaderGUI(QMainWindow):
         self.tabs.addTab(self.download_tab, "Download Progress")
 
         self.main_layout.addWidget(self.tabs)
-        # Mods Folder Tab
+
         self.mods_folder_tab = QWidget()
         self.mods_folder_tab_layout = QVBoxLayout(self.mods_folder_tab)
 
@@ -783,21 +781,21 @@ class SteamWorkshopDownloaderGUI(QMainWindow):
         mods_folder_title.setFont(QFont("Arial", 16, QFont.Bold))
         mods_folder_title.setStyleSheet("color: #1e88e5; margin: 10px 0;")
 
-        # Mod sayısı göstergesi
+
         self.mod_count_label = QLabel("Current Mod Count: 0")
         self.mod_count_label.setAlignment(Qt.AlignCenter)
         self.mod_count_label.setStyleSheet("color: #E0E0E0; margin: 5px 0;")
 
-        # Mod listesini gösteren tablo
+
         self.mods_folder_table = QTableWidget(0, 1)
         self.mods_folder_table.setHorizontalHeaderLabels(["Mod ID"])
         self.mods_folder_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.mods_folder_table.setSelectionBehavior(QTableWidget.SelectRows)
         self.mods_folder_table.setSelectionMode(QTableWidget.ExtendedSelection)
 
-        # Butonlar
+
         mods_folder_btn_layout = QHBoxLayout()
-        self.btn_open_folder = QPushButton("Open Folder")  # Yeni buton
+        self.btn_open_folder = QPushButton("Open Folder")
         self.btn_open_folder.clicked.connect(self.open_mods_folder)
 
         self.btn_delete_selected = QPushButton("Delete Selected")
@@ -806,7 +804,7 @@ class SteamWorkshopDownloaderGUI(QMainWindow):
         self.btn_delete_all = QPushButton("Delete All")
         self.btn_delete_all.clicked.connect(self.delete_all_mods)
 
-        mods_folder_btn_layout.addWidget(self.btn_open_folder)  # Yeni butonu ekle
+        mods_folder_btn_layout.addWidget(self.btn_open_folder)
         mods_folder_btn_layout.addWidget(self.btn_delete_selected)
         mods_folder_btn_layout.addWidget(self.btn_delete_all)
 
@@ -815,10 +813,9 @@ class SteamWorkshopDownloaderGUI(QMainWindow):
         self.mods_folder_tab_layout.addWidget(self.mods_folder_table)
         self.mods_folder_tab_layout.addLayout(mods_folder_btn_layout)
 
-        # Sekmeyi ekle
         self.tabs.addTab(self.mods_folder_tab, "Mods Folder")
 
-        # Mod listesini ilk yüklemede güncelle
+
         self.update_mods_folder_table()
 
     def check_steamcmd(self):
@@ -851,7 +848,6 @@ class SteamWorkshopDownloaderGUI(QMainWindow):
         self.steamcmd_path = os.path.join(self.steam_folder, 'steamcmd.exe')
         self.target_folder = self.target_path_input.text()
 
-        # Yeni: Max Parallel Downloads değerini kaydet
         self.max_parallel_downloads = int(self.max_downloads_input.currentText())
 
         if self.check_steamcmd():
@@ -901,14 +897,14 @@ class SteamWorkshopDownloaderGUI(QMainWindow):
                 QMessageBox.warning(self, "No Mods Found", "No mod IDs found in mods.txt file.")
                 return
 
-            # AppID'yi ilk mod ID'sinden çek
+
             if not self.app_id and self.mod_ids:
                 self.app_id = self.get_app_id_from_mod_id(self.mod_ids[0])
                 if not self.app_id:
                     QMessageBox.warning(self, "Error", "Could not determine the AppID for the mods.")
                     return
 
-            # Mod isimlerini varsayılan olarak ayarla
+
             self.mod_names = {mod_id: f"Mod-{mod_id}" for mod_id in self.mod_ids}
             self.start_download()
 
@@ -946,7 +942,7 @@ class SteamWorkshopDownloaderGUI(QMainWindow):
     def on_collection_fetched(self, mod_data, collection_id, app_id):
         self.mod_ids = [mod["id"] for mod in mod_data]
         self.mod_names = {mod["id"]: mod["name"] for mod in mod_data}
-        self.app_id = app_id  # AppID'yi sakla
+        self.app_id = app_id
         self.btn_fetch_collection.setEnabled(True)
 
         self.mod_list_table.setRowCount(len(mod_data))
@@ -1001,7 +997,7 @@ class SteamWorkshopDownloaderGUI(QMainWindow):
             self.steam_folder,
             self.target_folder,
             self.mod_names,
-            self.max_parallel_downloads  # Yeni: Max parallel downloads değerini ilet
+            self.max_parallel_downloads
         )
 
         self.downloader_thread.progress_update.connect(self.handle_progress_update)
@@ -1036,7 +1032,7 @@ class SteamWorkshopDownloaderGUI(QMainWindow):
         for mod_id, data in progress_dict.items():
             status = data.get("status", "UNKNOWN")
             progress = data.get("progress", 0)
-            mod_name = data.get("name", f"Mod-{mod_id}")  # İsim yoksa varsayılan olarak Mod-{id}
+            mod_name = data.get("name", f"Mod-{mod_id}")
             error = data.get("error", "")
 
             if status == "COMPLETED":
@@ -1054,7 +1050,7 @@ class SteamWorkshopDownloaderGUI(QMainWindow):
                 id_item = QTableWidgetItem(mod_id)
                 id_item.setFlags(id_item.flags() & ~Qt.ItemIsEditable)
 
-                name_item = QTableWidgetItem(mod_name)  # Mod ismini buraya ekliyoruz
+                name_item = QTableWidgetItem(mod_name)
                 name_item.setFlags(name_item.flags() & ~Qt.ItemIsEditable)
 
                 status_item = QTableWidgetItem(status)
@@ -1068,27 +1064,27 @@ class SteamWorkshopDownloaderGUI(QMainWindow):
                 self.active_downloads_table.setItem(row, 2, status_item)
                 self.active_downloads_table.setItem(row, 3, progress_item)
 
-        # Completed Mods tablosu
+
         for i, (mod_id, mod_name) in enumerate(completed_rows):
             self.completed_table.insertRow(i)
 
             id_item = QTableWidgetItem(mod_id)
             id_item.setFlags(id_item.flags() & ~Qt.ItemIsEditable)
 
-            name_item = QTableWidgetItem(mod_name)  # Mod ismini buraya ekliyoruz
+            name_item = QTableWidgetItem(mod_name)
             name_item.setFlags(name_item.flags() & ~Qt.ItemIsEditable)
 
             self.completed_table.setItem(i, 0, id_item)
             self.completed_table.setItem(i, 1, name_item)
 
-        # Failed Mods tablosu
+
         for i, (mod_id, mod_name, error) in enumerate(error_rows):
             self.error_table.insertRow(i)
 
             id_item = QTableWidgetItem(mod_id)
             id_item.setFlags(id_item.flags() & ~Qt.ItemIsEditable)
 
-            name_item = QTableWidgetItem(mod_name)  # Mod ismini buraya ekliyoruz
+            name_item = QTableWidgetItem(mod_name)
             name_item.setFlags(name_item.flags() & ~Qt.ItemIsEditable)
 
             error_item = QTableWidgetItem(error)
@@ -1098,7 +1094,7 @@ class SteamWorkshopDownloaderGUI(QMainWindow):
             self.error_table.setItem(i, 1, name_item)
             self.error_table.setItem(i, 2, error_item)
 
-        # İlerleme güncellemesi
+
         total_processed = completed_count + error_count
         self.overall_progress.setValue(total_processed)
         self.overall_progress_label.setText(f"Overall Progress: {total_processed}/{len(self.mod_ids)}")
@@ -1121,7 +1117,7 @@ class SteamWorkshopDownloaderGUI(QMainWindow):
             f"Download completed.\n\nTotal mods: {total_mods}\nSuccess: {success_count}\nFailed: {failed_count}"
         )
 
-        # Mods Folder tablosunu güncelle
+
         self.update_mods_folder_table()
 
     def cancel_download(self):
