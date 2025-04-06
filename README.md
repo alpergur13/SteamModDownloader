@@ -30,7 +30,7 @@ First of all your folder should look like this.
 
 After this is ready you should open steamcmd, after it downloades everything it should close after a few seconds. You don't need to open steamcmd every time, once is enough.
 # Manual Download
-If you want to manually download mods, you must edit mods.txt file so in each row there should be mod's id(which can be found in it's steam link like this https://steamcommunity.com/sharedfiles/filedetails/?id=2890901044)
+If you want to manually download mods, you must edit mods.txt file so in each row there should be mod's id(which can be found in it's steam link)
 
 It should look like this:
 
