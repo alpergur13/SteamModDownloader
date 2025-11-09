@@ -1,3 +1,5 @@
+Edit: This project is rarely being maintained, you are free to try and submit issues but it may take long to provide support to you.
+
 # SteamModDownloader
 This program is designed to download multiple mods.Either by manually downloading or collection downloading. It also tries to download more than one at a time to increase speed.
 
