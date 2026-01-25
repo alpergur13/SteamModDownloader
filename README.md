@@ -1,6 +1,6 @@
 Edit: This project is rarely being maintained, you are free to try and submit issues but it may take long to provide support to you.
 # V0.3:
-Newest version, not it doesn't require you to create steam folder, this does this in appdata automatically.
+Newest version, now it doesn't require you to create steam folder, this does this in appdata automatically.
 It is pretty self explanatory now, run the exe, paste Workshop or collection ID.
 # Old Readme:
 # SteamModDownloader
